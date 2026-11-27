@@ -117,7 +117,7 @@ const NODES  = buildNodes();
 const CURVES = buildCurves();
 
 const SPEC: FlowSpec = {
-  baseRotY: -0.3,
+  baseRotY: -0.22,
   loop: 5.6,
   nodes:  NODES,
   curves: CURVES,
@@ -126,5 +126,6 @@ const SPEC: FlowSpec = {
 };
 
 export default function ServicesHub() {
-  return <FlowScene spec={SPEC} />;
+  // Scale the whole scene down slightly so tiles never clip the 4:3 panel edges.
+  return <FlowScene spec={SPEC} scale={0.9} />;
 }

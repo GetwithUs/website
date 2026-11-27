@@ -17,10 +17,9 @@ const sql =
     max: 10,
     prepare: false,
     idle_timeout: 20,
-    // Neon free-tier computes suspend after inactivity and need a few seconds
-    // to wake. A short connect_timeout lets us detect that fast and retry
-    // instead of hanging for 20+ seconds until the OS TCP timeout fires.
-    connect_timeout: 10,
+    // Neon free-tier computes suspend after inactivity and can need 5-15 s
+    // to wake. 30 s avoids false connection failures during cold starts.
+    connect_timeout: 30,
   });
 if (env.NODE_ENV !== "production") globalForDb.sql = sql;
 

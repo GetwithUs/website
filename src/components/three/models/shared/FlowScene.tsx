@@ -118,9 +118,11 @@ export type FlowSceneProps = {
   k?: number;
   /** Incrementing this value restarts the run. */
   runKey?: number;
+  /** Uniform scale applied to the root group. Use to prevent clipping on tight panels. */
+  scale?: number;
 };
 
-export default function FlowScene({ spec, k: kProp = 0.5, runKey = 0 }: FlowSceneProps) {
+export default function FlowScene({ spec, k: kProp = 0.5, runKey = 0, scale = 1 }: FlowSceneProps) {
   const quality = useModelQuality();
   const tubeSegs = quality === "high" ? 32 : quality === "medium" ? 24 : 16;
   // Live palette
@@ -277,6 +279,7 @@ export default function FlowScene({ spec, k: kProp = 0.5, runKey = 0 }: FlowScen
     let t = -1;
     if (!isStill) {
       const wall = performance.now() / 1000;
+      if (runStart.current === 0) runStart.current = wall;
       t = wall - runStart.current;
       if (t > spec.loop) {
         runStart.current = wall;
@@ -378,7 +381,7 @@ export default function FlowScene({ spec, k: kProp = 0.5, runKey = 0 }: FlowScen
         position={[-3, -2, 4]}
       />
 
-      <group ref={root} rotation={[-0.1, spec.baseRotY, 0]}>
+      <group ref={root} rotation={[-0.1, spec.baseRotY, 0]} scale={scale}>
         {/* Back glass  - static, noCast */}
         <mesh
           geometry={BACK_GLASS_GEO}

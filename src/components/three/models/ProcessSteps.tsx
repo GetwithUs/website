@@ -306,7 +306,7 @@ export default function ProcessSteps() {
       {useShadows && <directionalLight ref={shadowRef} position={[-3, 4, 8]} intensity={0.6} castShadow />}
       <pointLight ref={plRef} color={palette.teal} intensity={0.5} distance={12} position={[-3, -2, 4]} />
 
-      <group ref={rootRef} rotation={[-0.1, -0.28, 0]}>
+      <group ref={rootRef} rotation={[-0.08, -0.22, 0]} scale={0.88}>
         {/* Back glass */}
         <mesh geometry={BACK_GEO} material={scene.backMat} position={[0, -0.05, -0.5]} receiveShadow />
 

@@ -69,6 +69,7 @@ type NavLink = {
 /** Header links after "Services". The footer's Company column reuses them. */
 const primaryNav: readonly NavLink[] = [
   { label: "Process", href: "/process" },
+  { label: "Clients", href: "/clients" },
   { label: "Blog", href: "/blog" },
   { label: "Work", href: "/work", needsWork: true },
   { label: "About", href: "/about" },

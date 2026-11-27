@@ -4,7 +4,26 @@
 // Plays once per browser session. Skipped for prefers-reduced-motion.
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import {
+  AmbientLight,
+  BufferAttribute,
+  BufferGeometry,
+  DirectionalLight,
+  DoubleSide,
+  ExtrudeGeometry,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  PointLight,
+  Points,
+  PointsMaterial,
+  RingGeometry,
+  Scene,
+  Shape,
+  WebGLRenderer,
+} from "three";
 import { WORDMARK } from "@/lib/brand";
 
 const DONE = 3.7; // seconds
@@ -49,55 +68,55 @@ export default function SplashScreen() {
   useEffect(() => {
     if (!visible || !canvas.current || !wrap.current) return;
     const el = wrap.current;
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas.current, antialias: true, alpha: true });
+    const renderer = new WebGLRenderer({ canvas: canvas.current, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(32, 1, 0.1, 50);
     camera.position.set(0, 0, 8);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const key = new THREE.DirectionalLight(0xffffff, 1); key.position.set(3, 4, 6); scene.add(key);
-    const rim = new THREE.PointLight(0x19a5b0, 1.2, 20); rim.position.set(-4, -2, 3); scene.add(rim);
-    const glow = new THREE.PointLight(0x19c0cc, 0, 8); glow.position.set(0.4, -0.3, 1.6); scene.add(glow);
+    scene.add(new AmbientLight(0xffffff, 0.55));
+    const key = new DirectionalLight(0xffffff, 1); key.position.set(3, 4, 6); scene.add(key);
+    const rim = new PointLight(0x19a5b0, 1.2, 20); rim.position.set(-4, -2, 3); scene.add(rim);
+    const glow = new PointLight(0x19c0cc, 0, 8); glow.position.set(0.4, -0.3, 1.6); scene.add(glow);
 
-    const root = new THREE.Group(); root.position.y = 0.95; scene.add(root);
-    const spin = new THREE.Group(); root.add(spin);
+    const root = new Group(); root.position.y = 0.95; scene.add(root);
+    const spin = new Group(); root.add(spin);
 
     // "G"
     const R = 1, ri = 0.51, a0 = Math.PI / 4;
-    const gs = new THREE.Shape();
+    const gs = new Shape();
     gs.moveTo(Math.cos(a0) * R, Math.sin(a0) * R);
     gs.absarc(0, 0, R, a0, Math.PI * 2, false);
     gs.lineTo(ri, 0);
     gs.absarc(0, 0, ri, Math.PI * 2, a0, true);
     gs.closePath();
-    const gGeo = new THREE.ExtrudeGeometry(gs, { depth: 0.32, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 4, curveSegments: 72 });
+    const gGeo = new ExtrudeGeometry(gs, { depth: 0.32, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 4, curveSegments: 72 });
     gGeo.translate(0, 0, -0.16);
-    const gMat = new THREE.MeshStandardMaterial({ color: 0xf6f9fc, roughness: 0.32, metalness: 0.12 });
-    const gMesh = new THREE.Mesh(gGeo, gMat); spin.add(gMesh);
+    const gMat = new MeshStandardMaterial({ color: 0xf6f9fc, roughness: 0.32, metalness: 0.12 });
+    const gMesh = new Mesh(gGeo, gMat); spin.add(gMesh);
 
     // Teal square
-    const h = 0.3, rr = 0.13, qs = new THREE.Shape();
+    const h = 0.3, rr = 0.13, qs = new Shape();
     qs.moveTo(-h + rr, -h); qs.lineTo(h - rr, -h); qs.quadraticCurveTo(h, -h, h, -h + rr); qs.lineTo(h, h - rr); qs.quadraticCurveTo(h, h, h - rr, h);
     qs.lineTo(-h + rr, h); qs.quadraticCurveTo(-h, h, -h, h - rr); qs.lineTo(-h, -h + rr); qs.quadraticCurveTo(-h, -h, -h + rr, -h);
-    const qGeo = new THREE.ExtrudeGeometry(qs, { depth: 0.3, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 4, curveSegments: 16 });
+    const qGeo = new ExtrudeGeometry(qs, { depth: 0.3, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 4, curveSegments: 16 });
     qGeo.translate(0, 0, -0.15);
-    const qMat = new THREE.MeshStandardMaterial({ color: 0x0e7f89, roughness: 0.28, metalness: 0.1, emissive: 0x0a5a62, emissiveIntensity: 0.5 });
-    const cube = new THREE.Mesh(qGeo, qMat);
+    const qMat = new MeshStandardMaterial({ color: 0x0e7f89, roughness: 0.28, metalness: 0.1, emissive: 0x0a5a62, emissiveIntensity: 0.5 });
+    const cube = new Mesh(qGeo, qMat);
     const CX = 0.35, CY = -0.3, CZ = 0.12;
     cube.position.set(CX, CY + 3.2, CZ); spin.add(cube);
 
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x19c0cc, transparent: true, opacity: 0, side: THREE.DoubleSide });
-    const ringGeo = new THREE.RingGeometry(0.95, 1, 96);
-    const ring = new THREE.Mesh(ringGeo, ringMat); ring.position.set(CX, CY, -0.3); root.add(ring);
+    const ringMat = new MeshBasicMaterial({ color: 0x19c0cc, transparent: true, opacity: 0, side: DoubleSide });
+    const ringGeo = new RingGeometry(0.95, 1, 96);
+    const ring = new Mesh(ringGeo, ringMat); ring.position.set(CX, CY, -0.3); root.add(ring);
 
     const N = 90, pos = new Float32Array(N * 3), seed: number[] = [];
     for (let i = 0; i < N; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 14; pos[i * 3 + 1] = (Math.random() - 0.5) * 9; pos[i * 3 + 2] = (Math.random() - 0.5) * 4 - 1;
       seed.push(Math.random() * 6.28);
     }
-    const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    const pMat = new THREE.PointsMaterial({ color: 0x6fd3db, size: 0.05, transparent: true, opacity: 0.55, depthWrite: false });
-    const pts = new THREE.Points(pGeo, pMat); scene.add(pts);
+    const pGeo = new BufferGeometry(); pGeo.setAttribute("position", new BufferAttribute(pos, 3));
+    const pMat = new PointsMaterial({ color: 0x6fd3db, size: 0.05, transparent: true, opacity: 0.55, depthWrite: false });
+    const pts = new Points(pGeo, pMat); scene.add(pts);
 
     const resize = () => {
       renderer.setSize(el.clientWidth, el.clientHeight, false);
@@ -193,7 +212,7 @@ export default function SplashScreen() {
           Build with us. Grow with us.
         </div>
       </div>
-      <div style={{ position: "absolute", left: "50%", bottom: "9%", width: "min(240px,50vw)", transform: "translateX(-50%)", height: 3, borderRadius: 3, background: "rgba(255,255,255,.12)", overflow: "hidden" }}>
+      <div style={{ position: "absolute", left: "50%", bottom: "calc(9% + env(safe-area-inset-bottom, 0px))", width: "min(240px,50vw)", transform: "translateX(-50%)", height: 3, borderRadius: 3, background: "rgba(255,255,255,.12)", overflow: "hidden" }}>
         <div ref={fill} style={{ height: "100%", width: 0, background: "#19a5b0" }} />
       </div>
       <button
@@ -202,8 +221,8 @@ export default function SplashScreen() {
         onClick={() => (wrap.current as unknown as { _skip?: () => void })?._skip?.()}
         style={{
           position: "absolute",
-          right: 16,
-          top: 14,
+          right: "max(16px, env(safe-area-inset-right, 0px))",
+          top: "max(14px, env(safe-area-inset-top, 0px))",
           background: "rgba(255,255,255,.12)",
           color: "#cfe0f0",
           border: 0,

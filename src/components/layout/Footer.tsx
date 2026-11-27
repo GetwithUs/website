@@ -47,7 +47,11 @@ export default function Footer() {
                     {email}
                   </TrackedLink>
                 ) : null}
-                {phone ? <span>{phone}</span> : null}
+                {phone ? (
+                  <TrackedLink kind="phone" href={`tel:${phone.replace(/\s/g, "")}`} className={linkClasses}>
+                    {phone}
+                  </TrackedLink>
+                ) : null}
                 {address ? <span>{address}</span> : city ? <span>Based in {city}</span> : null}
               </address>
             ) : null}

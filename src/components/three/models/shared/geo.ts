@@ -7,8 +7,8 @@ import { ExtrudeGeometry, Shape } from "three";
 
 const GEO_CACHE = new Map<string, ExtrudeGeometry>();
 
-export function rg(w: number, h: number, r: number, d: number): ExtrudeGeometry {
-  const key = `${w}|${h}|${r}|${d}`;
+export function rg(w: number, h: number, r: number, d: number, tx = 0, ty = 0, tz = 0): ExtrudeGeometry {
+  const key = `${w}|${h}|${r}|${d}|${tx}|${ty}|${tz}`;
   const hit = GEO_CACHE.get(key);
   if (hit) return hit;
 
@@ -34,7 +34,7 @@ export function rg(w: number, h: number, r: number, d: number): ExtrudeGeometry 
     bevelSegments: 2,
     curveSegments: 8,
   });
-  geo.translate(0, 0, -d / 2);
+  geo.translate(tx, ty, -d / 2 + tz);
   GEO_CACHE.set(key, geo);
   return geo;
 }

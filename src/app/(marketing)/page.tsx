@@ -14,6 +14,7 @@ import Commitments from "@/components/sections/Commitments";
 import Pricing from "@/components/sections/Pricing";
 import ProcessSection from "@/components/sections/ProcessSection";
 import SelectedWork from "@/components/sections/SelectedWork";
+import ClientsSection from "@/components/home/ClientsSection";
 import { site } from "@/config/site";
 import { homeFaqs } from "@/content/faqs";
 import { homePage } from "@/content/pages";
@@ -46,6 +47,7 @@ export default async function HomePage() {
       <Commitments />
       <Industries />
       <SelectedWork />
+      <ClientsSection />
       <HomeFaq />
       <GetwithusOverviewSection />
       <BlogSection posts={recentPosts} />

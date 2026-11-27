@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import { Bell, Inbox, LayoutDashboard, PenLine, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -10,6 +11,7 @@ const nav: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Leads", href: "/admin/leads", icon: Inbox },
   { label: "Blog", href: "/admin/blog", icon: PenLine },
+  { label: "Clients", href: "/admin/clients", icon: Users },
   { label: "Notifications", href: "/admin/notifications", icon: Bell },
 ];
 

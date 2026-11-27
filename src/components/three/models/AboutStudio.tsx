@@ -179,8 +179,7 @@ export default function AboutStudio() {
     const bbLbl  = lbl("Hi!", 0.6, 0.28, "white", "center");
 
     // Fill geo (needs translate for pivot-at-left)
-    const tlFillGeo = rg(1.7, 0.05, 0.02, 0.03);
-    tlFillGeo.translate(0.85, 0, 0);
+    const tlFillGeo = rg(1.7, 0.05, 0.02, 0.03, 0.85, 0, 0);
 
     return {
       backMat, stSurf, logoMat, gLbl, nameLbl, line1, line2,

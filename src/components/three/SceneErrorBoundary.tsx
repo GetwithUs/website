@@ -2,7 +2,6 @@
 
 import { Component, type ReactNode } from "react";
 import { logger } from "@/lib/logger";
-import { useSceneStore } from "@/stores/scene.store";
 
 let reported = false;
 
@@ -23,9 +22,8 @@ export default class SceneErrorBoundary extends Component<
   componentDidCatch(error: unknown) {
     if (!reported) {
       reported = true;
-      logger.warn("3D scene disabled after an error", { error });
+      logger.warn("3D scene disabled for this panel after an error", { error });
     }
-    useSceneStore.getState().setQuality("none");
   }
 
   render() {

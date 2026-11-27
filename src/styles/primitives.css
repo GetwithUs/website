@@ -1332,6 +1332,9 @@
   background-color: var(--bg-soft);
   background-image: radial-gradient(var(--dot) 1.2px, transparent 1.2px);
   background-size: 24px 24px;
+  /* Allow vertical scroll through the panel on touch devices. Without this
+     the R3F canvas absorbs the first touchmove and the page sticks. */
+  touch-action: pan-y;
 }
 .model-panel::before {
   content: "";
@@ -1352,6 +1355,14 @@
 }
 .model-canvas {
   opacity: 0;
+  /* Propagate touch-action to the canvas element itself so the browser
+     event chain allows vertical scrolling through the WebGL surface. */
+  touch-action: pan-y;
+}
+/* The <canvas> inside R3F inherits from the wrapper but we set it
+   explicitly in case the browser resets inherited touch-action on canvas. */
+.model-canvas canvas {
+  touch-action: pan-y;
 }
 .model-panel[data-live] .model-canvas {
   opacity: 1;

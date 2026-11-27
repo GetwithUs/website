@@ -102,9 +102,9 @@ export default function BlogScene3DModel({
       edge: new MeshStandardMaterial({
         color: palette.accent,
         emissive: palette.accent,
-        emissiveIntensity: 0.85,
+        emissiveIntensity: 0.45,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.85,
       }),
       bar: new MeshStandardMaterial({
         color: palette.line,
@@ -119,7 +119,7 @@ export default function BlogScene3DModel({
       orb: new MeshStandardMaterial({
         color: palette.accent,
         emissive: palette.accent,
-        emissiveIntensity: 1.4,
+        emissiveIntensity: 0.7,
         transparent: true,
         opacity: 0.88,
       }),
@@ -182,8 +182,8 @@ export default function BlogScene3DModel({
       if (!orb) continue;
       const angle = time * 0.48 * strength + (index * Math.PI * 2) / orbs.current.length;
       orb.position.set(
-        Math.cos(angle) * 2.05,
-        Math.sin(angle) * 1.45 + Math.sin(time * 0.8 + index) * 0.08 * strength,
+        Math.cos(angle) * 1.9,
+        Math.sin(angle) * 1.35 + Math.sin(time * 0.8 + index) * 0.08 * strength,
         Math.sin(angle * 0.7 + index) * 0.35,
       );
     }

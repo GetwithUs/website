@@ -5,9 +5,24 @@
  * kept as a single path. Every icon is aria-hidden: the label is on the link.
  */
 
-import { siInstagram } from "simple-icons";
+import { siApple, siInstagram } from "simple-icons";
 
 type IconProps = { className?: string };
+
+/** Apple mark from simple-icons. */
+export function AppleIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+    >
+      <path d={siApple.path} />
+    </svg>
+  );
+}
 
 /** LinkedIn "in" mark as a single path. */
 export function LinkedInIcon({ className }: IconProps) {

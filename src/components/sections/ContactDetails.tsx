@@ -36,7 +36,15 @@ function details(): Detail[] {
     });
   }
   if (phone) {
-    list.push({ label: "Phone or WhatsApp", icon: <Icon icon={Phone} size={20} />, value: phone });
+    list.push({
+      label: "Phone or WhatsApp",
+      icon: <Icon icon={Phone} size={20} />,
+      value: (
+        <TrackedLink kind="phone" href={`tel:${phone.replace(/\s/g, "")}`} className="text-ink transition-colors hover:text-accent">
+          {phone}
+        </TrackedLink>
+      ),
+    });
   }
   if (instagram) {
     list.push({

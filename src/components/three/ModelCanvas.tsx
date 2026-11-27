@@ -17,7 +17,7 @@ import {
 } from "@/components/three/models/context";
 import { MODEL_VIEWS, OWN_LIGHTS_MODELS, type ModelKey, type ModelProps } from "@/components/three/models/keys";
 import { THEME_EVENT } from "@/lib/theme";
-import { useSceneStore, type Quality } from "@/stores/scene.store";
+import { type Quality } from "@/stores/scene.store";
 
 const FRAME_MS = 1000 / 30;
 
@@ -92,7 +92,6 @@ export default function ModelCanvas({
 }) {
   const Model = MODELS[model];
   const [palette, setPalette] = useState(readModelPalette);
-  const setQuality = useSceneStore((state) => state.setQuality);
 
   useEffect(() => {
     const update = () => setPalette(readModelPalette());
@@ -114,9 +113,10 @@ export default function ModelCanvas({
       }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
-        gl.domElement.addEventListener("webglcontextlost", () => setQuality("none"), {
-          once: true,
+        gl.domElement.addEventListener("webglcontextlost", (event) => {
+          event.preventDefault();
         });
+        requestAnimationFrame(onReady);
       }}
     >
       <ModelContext value={{ palette, still, quality }}>

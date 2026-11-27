@@ -180,9 +180,9 @@ export default function WebDevLayers() {
       color: palette.card, transparent: true, opacity: 0.98, roughness: 0.3,
     }),
     navLogo:        new MeshStandardMaterial({ color: palette.accent, roughness: 0.35 }),
-    menuBar:        new MeshStandardMaterial({ color: palette.body,   roughness: 0.5  }),
+    menuBar:        new MeshStandardMaterial({ color: palette.line,   roughness: 0.5  }),
     ink:            new MeshStandardMaterial({ color: palette.ink,    roughness: 0.5  }),
-    soft:           new MeshStandardMaterial({ color: palette.body,   roughness: 0.6  }),
+    soft:           new MeshStandardMaterial({ color: palette.line,   roughness: 0.6  }),
     ctaTeal:        new MeshStandardMaterial({
       color: palette.accent, roughness: 0.4,
       emissive: palette.accent.clone(), emissiveIntensity: 0.3,
@@ -202,7 +202,7 @@ export default function WebDevLayers() {
       color: palette.card, transparent: true, opacity: 0.98, roughness: 0.3,
     }),
     badgeLabel:     new MeshBasicMaterial({ map: badgeTex, transparent: true }),
-  }), [palette.accent, palette.card, palette.line, palette.body, palette.ink, badgeTex]); // palette Colors are objects; identity changes when theme toggles
+  }), [palette.accent, palette.card, palette.line, palette.ink, badgeTex]); // palette Colors are objects; identity changes when theme toggles
   useEffect(() => () => { for (const m of Object.values(mats)) m.dispose(); }, [mats]);
 
   // Animation refs

@@ -5,10 +5,10 @@ import Header from "@/components/layout/Header";
 import WhatsAppFab from "@/components/layout/WhatsAppFab";
 
 /**
- * Every marketing page is fully static: built from src/content and src/config only.
- * `navigation` makes the build fail if any page in this group reads request data.
+ * The marketing app shell (header, footer, navigation) is static.
+ * Child pages stream or cache content as needed.
  */
-export const ensureStatic = "navigation";
+export const ensureStatic = "shell";
 
 export default function MarketingLayout({ children }: LayoutProps<"/">) {
   return (
