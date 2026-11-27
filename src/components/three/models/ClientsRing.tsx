@@ -162,7 +162,7 @@ function LogoCard({
   useFrame((_, delta) => {
     if (!meshRef.current || still) return;
     const step = Math.min(delta, 1 / 20);
-    targetZ.current = isHovered ? position.z + 0.6 : position.z;
+    targetZ.current = isHovered ? 0.6 : 0;
     meshRef.current.position.z += (targetZ.current - meshRef.current.position.z) * step * 6;
   });
 
@@ -185,6 +185,80 @@ function LogoCard({
   );
 }
 
+// Deterministic float params per card index — computed once so hooks stay pure
+const FLOAT_PARAMS = Array.from({ length: 12 }, (_, i) => ({
+  // base position spread across the canvas
+  baseX: ((Math.sin(i * 17.31 + 1.1) * 43758.5) % 1) * 7.2 - 3.6,
+  baseY: ((Math.sin(i * 31.17 + 2.3) * 43758.5) % 1) * 4.0 - 2.0,
+  baseZ: ((Math.sin(i * 11.57 + 0.7) * 43758.5) % 1) * 1.4 - 0.7,
+  // independent float frequencies so cards never move in sync
+  freqX: 0.28 + ((Math.sin(i * 23.11) * 43758.5) % 1) * 0.22,
+  freqY: 0.22 + ((Math.sin(i * 41.73) * 43758.5) % 1) * 0.20,
+  freqZ: 0.18 + ((Math.sin(i * 37.59) * 43758.5) % 1) * 0.16,
+  // phase offsets so cards start at different points in their cycle
+  phaseX: ((Math.sin(i * 53.21) * 43758.5) % 1) * Math.PI * 2,
+  phaseY: ((Math.sin(i * 61.07) * 43758.5) % 1) * Math.PI * 2,
+  phaseZ: ((Math.sin(i * 47.83) * 43758.5) % 1) * Math.PI * 2,
+  // float amplitude
+  ampX: 0.08 + ((Math.sin(i * 29.44) * 43758.5) % 1) * 0.08,
+  ampY: 0.10 + ((Math.sin(i * 19.87) * 43758.5) % 1) * 0.10,
+  ampZ: 0.05 + ((Math.sin(i * 13.33) * 43758.5) % 1) * 0.05,
+  // slow spin per card
+  spinY: (((Math.sin(i * 67.19) * 43758.5) % 1) - 0.5) * 0.004,
+}));
+
+// --- Single floating card wrapper ---
+function FloatingCard({
+  client,
+  index,
+  still,
+  isHovered,
+  onHover,
+  onClick,
+}: {
+  client: ClientCard;
+  index: number;
+  still: boolean;
+  isHovered: boolean;
+  onHover: (h: boolean) => void;
+  onClick: () => void;
+}) {
+  const groupRef = useRef<Group>(null!);
+  const elapsed = useRef(Math.random() * Math.PI * 2); // random start phase
+  const p = FLOAT_PARAMS[index % FLOAT_PARAMS.length]!;
+
+  const basePos = useMemo(
+    () => new Vector3(p.baseX, p.baseY, p.baseZ),
+    [p.baseX, p.baseY, p.baseZ],
+  );
+
+  useFrame((_, delta) => {
+    if (!groupRef.current || still) return;
+    const step = Math.min(delta, 1 / 20);
+    elapsed.current += step;
+    const t = elapsed.current;
+    groupRef.current.position.set(
+      basePos.x + Math.sin(t * p.freqX + p.phaseX) * p.ampX,
+      basePos.y + Math.sin(t * p.freqY + p.phaseY) * p.ampY,
+      basePos.z + Math.sin(t * p.freqZ + p.phaseZ) * p.ampZ,
+    );
+    groupRef.current.rotation.y += p.spinY;
+  });
+
+  return (
+    <group ref={groupRef} position={basePos}>
+      <LogoCard
+        client={client}
+        position={new Vector3(0, 0, 0)}
+        isHovered={isHovered}
+        onHover={onHover}
+        onClick={onClick}
+        still={still}
+      />
+    </group>
+  );
+}
+
 // --- Ring of cards ---
 function ClientRing({
   clients,
@@ -202,27 +276,18 @@ function ClientRing({
   hoveredSlug: string | null;
 }) {
   const groupRef = useRef<Group>(null!);
-  const elapsed = useRef(0);
   const tiltRef = useRef({ x: 0, y: 0 });
 
-  const radius = size === "large" ? 3.2 : 2.4;
   const count = Math.min(clients.length, 12);
 
-  const positions = useMemo(() => {
-    return Array.from({ length: count }, (_, i) => {
-      const angle = (i / count) * Math.PI * 2;
-      return new Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.4, 0);
-    });
-  }, [count, radius]);
-
-  // Mouse parallax tilt
+  // Gentle mouse parallax on the whole group
   useEffect(() => {
     const isFine = window.matchMedia("(pointer: fine)").matches;
     if (!isFine) return;
     const onMove = (e: MouseEvent) => {
       tiltRef.current = {
-        x: (e.clientY / window.innerHeight - 0.5) * 0.3,
-        y: (e.clientX / window.innerWidth - 0.5) * 0.3,
+        x: (e.clientY / window.innerHeight - 0.5) * 0.18,
+        y: (e.clientX / window.innerWidth - 0.5) * 0.18,
       };
     };
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -232,23 +297,24 @@ function ClientRing({
   useFrame((_, delta) => {
     if (!groupRef.current || still) return;
     const step = Math.min(delta, 1 / 20);
-    elapsed.current += step;
-    groupRef.current.rotation.z = elapsed.current * 0.06;
     groupRef.current.rotation.x += (tiltRef.current.x - groupRef.current.rotation.x) * step * 3;
     groupRef.current.rotation.y += (tiltRef.current.y - groupRef.current.rotation.y) * step * 3;
   });
 
+  // Scale the whole group so cards fit the canvas for the chosen size
+  const scale = size === "large" ? 1.0 : 0.82;
+
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={scale}>
       {clients.slice(0, count).map((client, i) => (
-        <LogoCard
+        <FloatingCard
           key={client.slug}
           client={client}
-          position={positions[i]!}
+          index={i}
+          still={still}
           isHovered={hoveredSlug === client.slug}
           onHover={(h) => onHoverClient(h ? client.slug : null)}
           onClick={() => onClickClient(client.slug)}
-          still={still}
         />
       ))}
     </group>
